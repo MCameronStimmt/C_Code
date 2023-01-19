@@ -3,14 +3,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-void guessGame(void); // function prototype
+void guessGame(void); // function prototype  (declaring functions)
 int isCorrect(int, int); // function prototype
 
 int main(void)
 {
-   // srand( time( 0 ) ); // seed random number generator
+    //srand( time( 0 ) ); // seed random number generator (use specifically time(0) as it is consistantly changing?) 
     //update with your name
-    puts("Hello Mordred");
+    puts("Hello Mordred"); //(puts() preferred for strings) 
    guessGame();
 
 } // end main
