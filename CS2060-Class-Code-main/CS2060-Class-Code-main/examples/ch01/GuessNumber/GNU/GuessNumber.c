@@ -21,33 +21,33 @@ void guessGame(void)
 {
    int answer; // randomly generated number
    int guess; // user's guess
-   int response; // 1 or 2 response to continue game
+   int response; // 1 or 2 response to continue game (no way to check if user entered anything aside from 1 or 2?)
 
    // loop until user types 2 to quit game
    do {
       // generate random number between 1 and 1000
       // 1 is shift, 1000 is scaling factor
-      answer = 1 + rand() % 1000;
+      answer = 1 + rand() % 1000; //(why is srand( time( 0 ) ) not placed above answer for readability and organization) 
 
       // prompt for guess
       puts("I have a number between 1 and 1000.\n" 
            "Can you guess my number?\n" 
            "Please type your first guess.");
       printf("%s", "? ");
-      scanf("%d", &guess);
+      scanf("%d", &guess); //(user input) 
 
       // loop until correct number
-      while (!isCorrect(guess, answer)) 
+      while (!isCorrect(guess, answer)) //(using while loop on isCorrect function) 
          scanf("%d", &guess);
 
       // prompt for another game
       puts("\nExcellent! You guessed the number!\n"
          "Would you like to play again?");
       printf("%s", "Please type ( 1=yes, 2=no )? ");
-      scanf("%d", &response);
+      scanf("%d", &response); //(user input) 
 
       puts("");
-   } while (response == 1);
+   } while (response == 1); //(continues loop/game as long as response equals 1) 
 } // end function guessGame
 
 // isCorrect returns true if g equals a
@@ -55,11 +55,12 @@ void guessGame(void)
 int isCorrect(int g, int a)
 {
    // guess is correct
+    //(could have placed while loop in this function to avoid clutter in guessGame()) 
    if (g == a)
       return 1;
 
    // guess is incorrect; display hint
-   if (g < a)
+   if (g < a) //(why if rather than else if)
       printf( "%s", "Too low. Try again.\n? " );
    else
       printf( "%s", "Too high. Try again.\n? " );
