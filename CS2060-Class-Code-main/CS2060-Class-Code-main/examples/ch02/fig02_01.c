@@ -6,6 +6,22 @@
 int main( void )
 {
    printf( "Welcome to C!\n" );
+   //declare variables
+   int length = 0;
+   int width = 0;
+   int area = 0;
+
+   puts("Enter the length\n");
+   scanf("%d", &length);
+
+   puts("Enter the width\n");
+   scanf("%d", &width);
+
+   area = length * width;
+   printf("Length: %d width: %d area: %d", length, width, area);
+
+   return 0;
+
 } // end function main 
 
 
