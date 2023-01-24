@@ -23,6 +23,8 @@ int main(void)
 	exploreInitVariables();
 	exploreCharIO();
 
+	//return 0;
+
 } //end main
 
 // Compare the size and memory address for different number types
