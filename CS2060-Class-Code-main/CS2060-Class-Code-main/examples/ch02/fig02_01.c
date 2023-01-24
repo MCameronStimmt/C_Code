@@ -10,6 +10,7 @@ int main( void )
    int length = 0;
    int width = 0;
    int area = 0;
+   double avg = 0;
 
    puts("Enter the length\n");
    int valid = scanf("%d", &length);
@@ -27,7 +28,11 @@ int main( void )
    area = length * width;
    printf("Length: %d width: %d area: %d", length, width, area);
 
+   avg = length / (double)width;
+   printf("\nAverage: %.1f", avg);
+
    return 0;
+
 
 } // end function main 
 
