@@ -12,10 +12,17 @@ int main( void )
    int area = 0;
 
    puts("Enter the length\n");
-   scanf("%d", &length);
+   int valid = scanf("%d", &length);
+   if (valid == 0) {
+	   puts("Please enter valid number");
+   }
+
 
    puts("Enter the width\n");
-   scanf("%d", &width);
+   valid = scanf("%d", &width);
+   if (valid == 0) {
+	   puts("Please enter valid number");
+   }
 
    area = length * width;
    printf("Length: %d width: %d area: %d", length, width, area);
