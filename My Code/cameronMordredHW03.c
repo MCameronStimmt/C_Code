@@ -79,7 +79,7 @@ double calculateCost(double hours) {
     if (hours > MIN_HOURS_AT_FLAT_RATE) {
         //caclulate cost
         additionalHours = (int)((hours - MIN_HOURS_AT_FLAT_RATE) + 1);
-        cost = cost + additionalHours * ADDITIONAL_HOURS_RATE;
+        cost += additionalHours * ADDITIONAL_HOURS_RATE;
     }
     if (cost > MAX_CHARGE_CHARGE) {
         cost = MAX_CHARGE_CHARGE;
