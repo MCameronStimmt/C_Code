@@ -22,12 +22,13 @@ int main(void) {
     unsigned int numberCars = 0;
     double totalCost = 0;
     double totalHours = 0;
+    double scanfReturn = 0;
 
     //loop till input -1
     do {
         puts("Enter number of hours car was parked or enter -1 to quit");
         //prompt input
-            double scanfReturn = scanf("%lf", &input);
+            scanfReturn = scanf("%lf", &input);
             //clear buffer
             while ((getchar()) != '\n');
             //display no cars if -1 entered and then leave loop
