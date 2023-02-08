@@ -3,13 +3,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+//constants
 const double MIN_HOURS_AT_FLAT_RATE = 3;
 const double MIN_FLAT_RATE_CHARGE = 3;
 const double ADDITIONAL_HOURS_RATE = 0.75;
 const double MAX_HOURS_ALLOWED = 24;
 const double MAX_CHARGE_CHARGE = 12;
 
-//func
+//functions
 bool isValid(double, double);
 double calculateCost(double);
 void displaySummary(double, int, double);
@@ -22,7 +23,7 @@ int main(void) {
     double totalCost = 0;
     double totalHours = 0;
 
-    //loop till exit
+    //loop till input -1
     do {
         puts("Enter number of hours car was parked or enter -1 to quit");
         //prompt input
@@ -34,6 +35,7 @@ int main(void) {
                 displaySummary(totalCost, numberCars, totalHours);
                 valid = true;
             }
+            //check if input valid and calculate final display
             else {
                 valid = isValid(scanfReturn, input);
                 if (valid == true) {
@@ -61,7 +63,7 @@ bool isValid(double scanfReturn, double validInput) {
                 valid = true;
             }
             else {
-                printf("Please enter 1 through %lf \n", MAX_HOURS_ALLOWED);
+                printf("Please enter 1 through %.lf \n", MAX_HOURS_ALLOWED);
             }
         }
         else {
