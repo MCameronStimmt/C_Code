@@ -8,15 +8,22 @@ const double MIN_HOURS_AT_FLAT_RATE = 3;
 const double MIN_FLAT_RATE_CHARGE = 3;
 const double ADDITIONAL_HOURS_RATE = 0.75;
 const double MAX_HOURS_ALLOWED = 24;
-const double MAX_CHARGE_CHARGE = 12;
+const double MAX_CHARGE = 12;
 
 //functions
+void continuePrompt(void);
 bool isValid(double, double);
 double calculateCost(double);
 void displaySummary(double, int, double);
 
 int main(void) {
 
+    continuePrompt(); 
+  
+}
+
+void continuePrompt(void) {
+    //variables
     double input = 0;
     bool valid = false;
     unsigned int numberCars = 0;
@@ -28,27 +35,27 @@ int main(void) {
     do {
         puts("Enter number of hours car was parked or enter -1 to quit");
         //prompt input
-            scanfReturn = scanf("%lf", &input);
-            //clear buffer
-            while ((getchar()) != '\n');
-            //display no cars if -1 entered and then leave loop
-            if (input == -1) {
-                displaySummary(totalCost, numberCars, totalHours);
-                valid = true;
+        scanfReturn = scanf("%lf", &input);
+        //clear buffer
+        while ((getchar()) != '\n');
+        //display no cars if -1 entered and then leave loop
+        if (input == -1) {
+            displaySummary(totalCost, numberCars, totalHours);
+            valid = true;
+        }
+        //check if input valid and calculate final display
+        else {
+            valid = isValid(scanfReturn, input);
+            if (valid == true) {
+                //incriment totals
+                numberCars++;
+                totalCost += calculateCost(input);
+                totalHours += input;
+                displaySummary(calculateCost(input), numberCars, input);
             }
-            //check if input valid and calculate final display
-            else {
-                valid = isValid(scanfReturn, input);
-                if (valid == true) {
-                    numberCars++;
-                    totalCost += calculateCost(input);
-                    totalHours += input;
-                    displaySummary(calculateCost(input), numberCars, input);
-                }
-            }        
-      
+        }
+
     } while (valid == false || input != -1);
-  
 }
 
 bool isValid(double scanfReturn, double validInput) {
@@ -84,8 +91,8 @@ double calculateCost(double hours) {
         additionalHours = (int)((hours - MIN_HOURS_AT_FLAT_RATE) + 1);
         cost += additionalHours * ADDITIONAL_HOURS_RATE;
     }
-    if (cost > MAX_CHARGE_CHARGE) {
-        cost = MAX_CHARGE_CHARGE;
+    if (cost > MAX_CHARGE) {
+        cost = MAX_CHARGE;
     }
 
     return cost;
@@ -97,7 +104,7 @@ void displaySummary(double cost, int cars, double hours) {
         puts("Parking Garage Summary \nTotal Cars   Total Hours   Total Charge");
         printf("%.2d           %.1lf           $%.2lf \n", cars, hours, cost);
     }
-    //if -1 entered
+    //if -1 entered first
     else {
         puts("Parking Garage Summary \nTotal Cars   Total Hours   Total Charge");
         puts("There were no cars parked");
