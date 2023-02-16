@@ -5,12 +5,21 @@
 
 // function prototypes
 void modifyArray(int b[], size_t size);
-void modifyElement(int e);               
+void modifyElement(int e);              
+void printArray(const int b[], size_t size);
 
 // function main begins program execution
 int main(void)
 {
    int a[SIZE] = { 0, 1, 2, 3, 4 }; // initialize array a
+
+   int b[2][3] = { 0, 1, 2, 3, 4, 5 }; 
+
+   printf("array %p \n", a);
+   printf("&array %p \n", &a);
+   printf("&array[0] %p \n \n", &a[0]);
+
+   printArray(a, SIZE);
 
    puts("Effects of passing entire array by reference:\n\nThe "
       "values of the original array are:");
@@ -38,6 +47,13 @@ int main(void)
 
    // output value of a[3]
    printf("The value of a[3] is %d\n", a[3]);
+}
+
+void printArray(const int b[], size_t size) {
+
+    for (size_t i = 0; i < size; i++) {
+        printf("%d \n", b[i]);
+    }
 }
 
 // in function modifyArray, "b" points to the original array "a" 
