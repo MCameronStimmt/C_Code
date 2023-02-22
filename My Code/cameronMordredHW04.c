@@ -39,6 +39,8 @@ int main(void) {
 
     printf("\n\nClass average is %.1lf\n", average(totalGrades, STUDENTS));
 
+    return 0; 
+
 }
 
 //functions
@@ -102,6 +104,7 @@ void calculateGrade(const int grades[][GRADE_CATEGORIES], double totalGrade[], c
 }
 
 char printLetter(double grade, int students) {
+
     char letter = 'F';
     if (grade >= 90) {
         letter = 'A';
@@ -133,7 +136,7 @@ int isValid(int maxGrade) {
     bool valid = false;
     int scanfReturn = 0;
     int input = 0;
-
+    //loop until valid 
     while (!valid) {
         //prompt input
         scanfReturn = scanf("%d", &input);

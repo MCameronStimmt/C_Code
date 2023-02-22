@@ -14,15 +14,15 @@ int main ()
 	int calcHouseNum1 = 0;
 	int calcHouseNum2 = 0;
 	int *houseNumPtr = &houseNum;
-	
+	//prints actual value stored
 	printf("houseNum %d\n", houseNum);
-
+	//prints address
 	printf("&houseNum %p\n\n", &houseNum);
-
+	//prints value via *identifier 
 	printf ("*houseNumPtr  %d\n", *houseNumPtr);
-
+	//prints actual value of pointer which is the address of houseNum
 	printf ("houseNumPtr %p\n\n", houseNumPtr);
-
+	//prints address of pointer
 	printf ("&houseNumPtr %p\n\n", &houseNumPtr);
 
 	calcHouseNum1 =  *houseNumPtr + *houseNumPtr;
