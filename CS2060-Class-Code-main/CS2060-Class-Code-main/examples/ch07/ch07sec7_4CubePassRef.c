@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int cubePass1(int number);
-int cubePass2(int * numberPtr);
+void cubePass2(int * numberPtr);
 
 int main(void) {
 
@@ -18,7 +18,7 @@ int main(void) {
 	printf ("In main after cubePass1  numberMain = %d\n", numberMain);
 	printf ("Result = %d\n", result);
 	printf("\nIn main before cubePass2  numberMain = %d\n", numberMain);
-	result = cubePass2(&numberMain);
+//	result = cubePass2(&numberMain);
 	printf("\nIn main after cubePass2  numberMain = %d\n", numberMain);
 	printf("result = %d\n", result);
 
@@ -37,18 +37,15 @@ int cubePass1 (int number)
 	printf("number = %d\n", number);
 	return cube;
 } 
-
-int cubePass2 (int * numberPtr) 
-{
-	int cube = 0;
-	puts ("\nIn cubePass2");
-	printf("numberPtr = %p\n", numberPtr);
-	printf ("*numberPtr = %d\n", *numberPtr);
-	printf("&numberPtr = %p\n", &numberPtr);
-	cube = (* numberPtr )* (* numberPtr )* (* numberPtr); 
+//point to constant makes value unmodifiable 
+void cubePass2(const int* numberPtr) {
+	printf("   *numberPtr = %d\n", *numberPtr);
+	printf("   numberPtr = %p\n", numberPtr);
+	int cube = (*numberPtr) * (*numberPtr) * (*numberPtr);
 	*numberPtr = cube;
-	printf ("*numberPtr = %d\n", *numberPtr);
-	return cube;
-} 
+	numberPtr = &cube;
+	printf("   *numberPtr = %d\n\n", *numberPtr);
+}
+
 
 

@@ -13,6 +13,7 @@ int main ()
 	int houseNum = 13;
 	int calcHouseNum1 = 0;
 	int calcHouseNum2 = 0;
+	//declare pointer
 	int *houseNumPtr = &houseNum;
 	//prints actual value stored
 	printf("houseNum %d\n", houseNum);
@@ -24,15 +25,15 @@ int main ()
 	printf ("houseNumPtr %p\n\n", houseNumPtr);
 	//prints address of pointer
 	printf ("&houseNumPtr %p\n\n", &houseNumPtr);
-
+	//use * to access value 
 	calcHouseNum1 =  *houseNumPtr + *houseNumPtr;
 
 	printf("*houseNumPtr + *houseNumPtr is %d\n\n", calcHouseNum1);
-
+	//parenthesis to differenciate between multiplication and operator 
 	calcHouseNum2 = 2 * (*houseNumPtr);
 
 	printf("2 * (*houseNumPtr) is %d\n\n", calcHouseNum2);
-
+	//using both address and dereferencing operator 
 	printf("\n&*houseNumPtr = %p"
 		"\n*&houseNumPtr = %p\n", &*houseNumPtr, *&houseNumPtr);
 			
