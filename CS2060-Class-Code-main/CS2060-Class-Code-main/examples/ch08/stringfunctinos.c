@@ -27,8 +27,8 @@ void wordOccurs(void);
 int main(void)
 {
 	
-	//strcpyEx1();
-	//strcpyEx2();
+	strcpyEx1();
+	strcpyEx2();
 	//strncpyEx1();
 	//strncpyEx2();
 	//stringCompare();
