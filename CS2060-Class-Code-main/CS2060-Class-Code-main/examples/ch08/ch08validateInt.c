@@ -108,17 +108,17 @@ bool  validateInt(const char* buff)
 	bool isValid = false;
 	char* end;
 	errno = 0;
-	int* validInt = 0;
+	int validInt = 0;
 	long intTest = strtol(buff, &end, 10);
 
 	if (end == buff) {
-		fprintf(stderr, "%s: not a decimal number\n", buff);
+		fprintf(stderr, "%s: not an integer\n", buff);
 	}
 	else if ('\0' != *end) {
 		fprintf(stderr, "%s: extra characters at end of input: %s\n", buff, end);
 	}
 	else if ((LONG_MIN == intTest || LONG_MAX == intTest) && ERANGE == errno) {
-		fprintf(stderr, "%s out of range of type long\n", buff);
+		fprintf(stderr, "%s Error out of range of long int\n", buff);
 	}
 	else if (intTest > INT_MAX) {
 		fprintf(stderr, "%ld greater than INT_MAX\n", intTest);
@@ -128,7 +128,7 @@ bool  validateInt(const char* buff)
 	}
 	else {
 		validInt = (int)intTest;
-		printf("%d is integer value ", *validInt);
+		printf("%d Valid int", validInt);
 		isValid = true;
 	}
 	return isValid; 
