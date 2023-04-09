@@ -36,6 +36,7 @@ typedef struct donation {
 //functions
 void setUpOrganization(Organization* orgPtr);
 void displayOrganization(Organization* orgPtr);
+void fGets(char* input);
 bool validInt(char* input);
 bool correctEmail();
 void createURL(Organization* orgPtr); 
@@ -81,7 +82,7 @@ void setUpOrganization(Organization* orgPtr) {
 	bool contInt = false;
 	//loop till valid int
 	while (!contInt) {
-		fgets(orgPtr->goalAmount, BUFF_LENGTH, stdin);
+		fGets(orgPtr->goalAmount);
 		contInt = validInt(orgPtr->goalAmount);
 	}
 	//continue loop while email is incorrect
@@ -101,18 +102,20 @@ void setUpOrganization(Organization* orgPtr) {
 		}
 	}
 }
+void fGets(char* input) {
+	fgets(input, BUFF_LENGTH, stdin);
+	//remove ending
+	size_t inputLength = strnlen(input, BUFF_LENGTH);
+	if (inputLength > 0 && input[inputLength - 1] == '\n')
+	{
+		input[inputLength - 1] = '\0';
+		inputLength--;
+	}
+}
 //validate goal amount 
 bool validInt(char* input) {
 	
 	bool cont = false;
-		//fgets(orgPtr->goalAmount, BUFF_LENGTH, stdin);
-		//remove ending
-		size_t inputLength = strnlen(input, BUFF_LENGTH);
-		if (inputLength > 0 && input[inputLength - 1] == '\n')
-		{
-			input[inputLength - 1] = '\0';
-			inputLength--;
-		}
 		//test for valid integer
 		char* end;
 		errno = 0;
@@ -206,14 +209,7 @@ void setUpDonation(Donation* donPtr, Organization* orgPtr) {
 		displayFundraiser(orgPtr);
 		//always prompt for amount
 		puts("\nEnter donation amount");
-		fgets(donPtr->amount, BUFF_LENGTH, stdin);
-		//remove extra characters
-		size_t inputLength = strnlen(donPtr->amount, BUFF_LENGTH);
-		if (inputLength > 0 && donPtr->amount[inputLength - 1] == '\n')
-		{
-			donPtr->amount[inputLength - 1] = '\0';
-			inputLength--;
-		}
+		fGets(donPtr->amount);
 		//if q is entered, skip regular donation and move to login 
 		if (strcmp(donPtr->amount, "q") == 0 || strcmp(donPtr->amount, "Q") == 0) {
 			cont = true;
