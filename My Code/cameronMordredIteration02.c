@@ -12,7 +12,8 @@
 #define CHOICE_SIZE 2
 #define BUFF_LENGTH 80
 #define FEE 0.031
-#define FOLDER_PATH	"C:\\Users\\Mordred\\Documents\\GitHubRepos\\CS2060\\Files\\fundraiser\\"
+#define FOLDER_PATH	"C:\\Users\\Mordred\\Documents\\GitHubRepos\\CS2060\\fundraiser\\"
+#define TXT ".txt"
 
 //Structures
 typedef struct organization {
@@ -24,6 +25,7 @@ typedef struct organization {
 	char password[BUFF_LENGTH];
 	char url[BUFF_LENGTH];
 	char urlFull[BUFF_LENGTH]; 
+	char file[BUFF_LENGTH]; 
 	double donations;
 	int numDonations;
 	double creditCard;
@@ -35,6 +37,7 @@ typedef struct donation {
 	char name[BUFF_LENGTH];
 	char zip[BUFF_LENGTH];
 	double totalDonation;
+	bool cont; 
 }Donation;
 
 //functions
@@ -46,15 +49,17 @@ int compare(char* name, char* input);
 void fGets(char* input);
 bool validInt(char* input);
 void createURL(Organization* orgPtr); 
-void createFile(Organization* orgPtr);
+void createRecieptFile(char* name, char* file);
 void setUpDonation(Donation* donPtr, Organization* orgPtr);
 void selectOrg(Organization** headPtr, Donation* donPtr);
 void validZip(Donation* donPtr);
-void reciept(char* orgName, double donTotal);
+void reciept(char* orgName, double donTotal, char* file);
 void cardFee(Donation* donPtr, Organization* orgPtr);
 void login(Donation* donPtr, Organization* orgPtr);
+void orgFile(Organization* headPtr);
 void displayFundraiser(Organization* orgPtr); 
 void printFundraisers(Organization* headPtr); 
+void deleteList(Organization** headPtr); 
 
 
 int main(void) {
@@ -66,6 +71,7 @@ int main(void) {
 	Donation* donPtr = &don; 
 	bool cont = true;
 	bool orgCont = false; 
+	donPtr->cont = false; 
 	//bool delCont = false;
 	//insert pets
 	while (cont) {
@@ -73,12 +79,15 @@ int main(void) {
 		puts("Do you want to enter another organization? y/n");
 		cont = correctYN();
 	}
-	printFundraisers(orgHeadPtr); 
+
 	//displayFundraiser(org1Ptr); 
-	while (!orgCont) {
+	while (!orgCont && !donPtr->cont) {
+		printFundraisers(orgHeadPtr);
 		puts("Enter the name of the organization you want to register.");
 		selectOrg(&orgHeadPtr, donPtr);
 	}
+	orgFile(orgHeadPtr); 
+	deleteList(&orgHeadPtr);
 	//setUpDonation(don1Ptr, org1Ptr);
 
 	return 0; 
@@ -152,9 +161,12 @@ bool correctYN() {
 //prompt organization questions 
 void setUpOrganization(Organization* orgPtr) {
 	bool cont = false;
+	orgPtr->donations = 0;
+	orgPtr->numDonations = 0;
+	orgPtr->creditCard = 0;
 	//fill in organization info
 	puts("Enter organization name");
-	fgets(orgPtr->organizationName, BUFF_LENGTH, stdin);
+	fGets(orgPtr->organizationName);
 	puts("Enter your name");
 	fgets(orgPtr->name, BUFF_LENGTH, stdin);
 	puts("Enter purpose");
@@ -186,7 +198,7 @@ void setUpOrganization(Organization* orgPtr) {
 		}
 	}
 	createURL(orgPtr);
-	//createFile(orgPtr); 
+	createRecieptFile(orgPtr->url, orgPtr->file);
 }
 void fGets(char* input) {
 	fgets(input, BUFF_LENGTH, stdin);
@@ -237,6 +249,13 @@ bool validInt(char* input) {
 		return cont; 
 }
 
+void validEmail() {
+
+}
+
+void validPassword() {
+
+}
 //create url using organization name
 void createURL(Organization* orgPtr) {
 	//create strings holding url parts
@@ -258,15 +277,14 @@ void createURL(Organization* orgPtr) {
 
 }
 
-void createFile(Organization* orgPtr) {
+void createRecieptFile(char* name, char* file) {
 	FILE* filePtr;
-	char name[BUFF_LENGTH];
 	char path[BUFF_LENGTH];
-	strcpy(name, orgPtr->url);
 	strcpy(path, FOLDER_PATH);
 	strcat(path, name);
-	strcat(path, ".txt");
-	filePtr = fopen(path, "w");
+	sprintf(file, "%s.txt", path); 
+	puts(file); 
+	filePtr = fopen(file, "w");
 	//check if you can make file
 	if (filePtr == NULL) {
 		printf("Unable to create file.\n");
@@ -280,19 +298,19 @@ void createFile(Organization* orgPtr) {
 void setUpDonation(Donation* donPtr, Organization* orgPtr) {
 	bool cont = false; 
 	//loop until organization enters q/Q
-	//while (!cont) {
+	while (!cont) {
 		displayFundraiser(orgPtr);
 		//always prompt for amount
 		puts("\nEnter donation amount");
 		fGets(donPtr->amount);
 		//if q is entered, skip regular donation and move to login 
 		if (strcmp(donPtr->amount, "q") == 0 || strcmp(donPtr->amount, "Q") == 0) {
-			//cont = true;
+			cont = true;
 			login(donPtr, orgPtr); 
 		}
 		//if regular donation, prompt for info 
 		else if (validInt(donPtr->amount) == true) {
-
+			cont = true;
 			puts("Enter your name");
 			fgets(donPtr->name, BUFF_LENGTH, stdin);
 			puts("Enter your 5 digit zip code");
@@ -301,25 +319,24 @@ void setUpDonation(Donation* donPtr, Organization* orgPtr) {
 			orgPtr->numDonations++;
 			cardFee(donPtr, orgPtr);
 			//ask for reciept
-			reciept(orgPtr->organizationName, donPtr->totalDonation);
+			reciept(orgPtr->organizationName, donPtr->totalDonation, orgPtr->file);
 		}
-	//}
+	}
 }
 void selectOrg(Organization** headPtr, Donation* donPtr) {
-	bool cont = false; 
+ 
 	Organization* current = *headPtr;
 
 	char name[80];
-	fgets(name, BUFF_LENGTH, stdin);
+	fGets(name);
 	puts((*headPtr)->organizationName);
-	while (current != NULL && (compare(current->organizationName, name) != 0) && !cont) {
+	while (current != NULL && (compare(current->organizationName, name) != 0)) {
 		
 			current = current->next;
-			puts("moved");
+
 	}
 	if (current != NULL) {
 		setUpDonation(donPtr, current);
-		cont = true; 
 	}
 	if (current == NULL) {
 		printf("%s not found", name);
@@ -344,25 +361,21 @@ void cardFee(Donation* donPtr, Organization* orgPtr) {
 }
 
 //prompts for reciept 
-void reciept(char* orgName, double donTotal) {
-	char yesNo[BUFF_LENGTH];
+void reciept(char* orgName, double donTotal, char* file) {
+	FILE* filePtr;
 	bool cont = false;
 	puts("Do you want a reciept? (y)es y/Y or (n)o n/N");
 	//continue to ask until user inputs acceptable answer 
 	while (!cont) {
-		fgets(yesNo, BUFF_LENGTH, stdin);
-		//remove extra elements
-		size_t inputLength = strnlen(yesNo, BUFF_LENGTH);
-		if (inputLength > 0 && yesNo[inputLength - 1] == '\n')
-		{
-			yesNo[inputLength - 1] = '\0';
-			inputLength--;
-		}
-		//print out reciept info while user inputs y/Y
-		if (strcmp(yesNo, "y") == 0 || strcmp(yesNo, "Y") == 0) {
+		bool correct = correctYN();
+		//create password only if correctEmail function returns true 
+		if (correct == true) {
+			filePtr = fopen(file, "a");
 			cont = true;
 			printf("\nOrganization: %s", orgName);
+			fprintf(filePtr, "Organization: %s", orgName);
 			printf("Donation Amount: %.2f", donTotal);
+			fprintf(filePtr, "\nDonation Amount: %.2f", donTotal);
 			//find local time and date
 			time_t now;
 			time(&now);
@@ -377,15 +390,17 @@ void reciept(char* orgName, double donTotal) {
 			//if its am
 			if (hours < 12) {    
 				printf("\nDonation Date:  %02d/%02d/%d - %02d:%02d:%02d AM\n", day, month, year, hours, minutes, seconds);
+				fprintf(filePtr, "\nDonation Date : % 02d / % 02d / % d - % 02d : % 02d : % 02d AM\n", day, month, year, hours, minutes, seconds);
 			}
 			//if pm
 			else {    
 				printf("\nDonation Date:  %02d/%02d/%d - %02d:%02d:%02d PM\n", day, month, year, hours - 12, minutes, seconds);
+				fprintf(filePtr, "\nDonation Date : % 02d / % 02d / % d - % 02d : % 02d : % 02d PM\n", day, month, year, hours - 12, minutes, seconds);
 			}
-
+			fclose(filePtr);
 		}
 		//move on to next step
-		else if (strcmp(yesNo, "n") == 0 || strcmp(yesNo, "N") == 0) {
+		else if (correct == false) {
 			cont = true;
 		}
 		else {
@@ -393,7 +408,6 @@ void reciept(char* orgName, double donTotal) {
 		}
 	}
 }
-
 
 //validate zip code
 void validZip(Donation* donPtr) {
@@ -484,6 +498,8 @@ void login(Donation* donPtr, Organization* orgPtr) {
 				//move on to display information 
 				else {
 					correctP = true;
+					//end while loop in main
+					donPtr->cont = true; 
 					displayOrganization(orgPtr);
 				}
 			}
@@ -496,7 +512,26 @@ void login(Donation* donPtr, Organization* orgPtr) {
 		setUpDonation(donPtr, orgPtr);
 	}
 }
+void orgFile(Organization* headPtr) {
+	FILE* filePtr;
+	filePtr = fopen("C:\\Users\\Mordred\\Documents\\GitHubRepos\\CS2060\\fundraiser\\orgs.txt", "w");
+	//check if you can make file
+	if (filePtr == NULL) {
+		printf("Unable to create file.\n");
+	}
+	Organization* current = headPtr;
 
+	//put into file line by line
+	while (current != NULL) {
+		fprintf(filePtr, "Organization name: %s\n", current->organizationName);
+		fprintf(filePtr, "Total Number of Donations: %d\n", current->numDonations);
+		fprintf(filePtr, "Total Amount Raised: %.2f\n", current->donations);
+		fprintf(filePtr, "Total amount paid for credit card processing: %.2f\n", current->creditCard);
+		current = current->next;
+	}
+	//close file
+	fclose(filePtr);
+}
 //print info to admin
 void displayOrganization(Organization* orgPtr) {
 	printf("Organization name: %s\n", orgPtr->organizationName);
@@ -533,4 +568,16 @@ void displayFundraiser(Organization* orgPtr) {
 	else {
 		printf("We are %.2f percent towards our goal of $%.2f\n", percent, amount);
 	}
+}
+//orgs begone 
+void deleteList(Organization** headPtr) {
+	Organization* current = *headPtr;
+	Organization* next;
+	//start from the beginning
+	while (current != NULL) {
+		next = current->next;
+		free(current);
+		current = next;
+	}
+	*headPtr = NULL;
 }
