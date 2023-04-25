@@ -48,6 +48,8 @@ void insert(Organization** headPtr);
 int compare(char* name, char* input);
 void fGets(char* input);
 bool validInt(char* input);
+bool validEmail(char* input); 
+bool validPassword(char* input); 
 void createURL(Organization* orgPtr); 
 void createRecieptFile(char* name, char* file);
 void setUpDonation(Donation* donPtr, Organization* orgPtr);
@@ -65,36 +67,35 @@ void deleteList(Organization** headPtr);
 int main(void) {
 	//create organization structure
 	Organization* orgHeadPtr = NULL;
-	//initialize variables to zero
 	//create donation structure
 	Donation don;
 	Donation* donPtr = &don; 
 	bool cont = true;
 	bool orgCont = false; 
 	donPtr->cont = false; 
-	//bool delCont = false;
-	//insert pets
+	//insert orgs
 	while (cont) {
 		insert(&orgHeadPtr);
 		puts("Do you want to enter another organization? y/n");
 		cont = correctYN();
 	}
 
-	//displayFundraiser(org1Ptr); 
+	//continue until organization login is successful
 	while (!orgCont && !donPtr->cont) {
 		printFundraisers(orgHeadPtr);
 		puts("Enter the name of the organization you want to register.");
 		selectOrg(&orgHeadPtr, donPtr);
 	}
+	//create file for orgs
 	orgFile(orgHeadPtr); 
+	//deallocate list
 	deleteList(&orgHeadPtr);
-	//setUpDonation(don1Ptr, org1Ptr);
 
 	return 0; 
 }
 //insert into linked list
 void insert(Organization** headPtr) {
-
+	//create new org
 	Organization* newOrgPtr = (Organization*)malloc(sizeof(Organization));
 	//prompt data
 	setUpOrganization(newOrgPtr);
@@ -135,6 +136,7 @@ int compare(char* name, char* input) {
 	int result = strcmp(a, input);
 	return result;
 }
+//return true or false depending on yes/no prompt
 bool correctYN() {
 	char yesNo[BUFF_LENGTH];
 	bool correct = false;
@@ -161,6 +163,7 @@ bool correctYN() {
 //prompt organization questions 
 void setUpOrganization(Organization* orgPtr) {
 	bool cont = false;
+	//initialize to 0
 	orgPtr->donations = 0;
 	orgPtr->numDonations = 0;
 	orgPtr->creditCard = 0;
@@ -168,9 +171,9 @@ void setUpOrganization(Organization* orgPtr) {
 	puts("Enter organization name");
 	fGets(orgPtr->organizationName);
 	puts("Enter your name");
-	fgets(orgPtr->name, BUFF_LENGTH, stdin);
+	fGets(orgPtr->name);
 	puts("Enter purpose");
-	fgets(orgPtr->purpose, BUFF_LENGTH, stdin);
+	fGets(orgPtr->purpose);
 	puts("Enter goal amount");
 	orgPtr->donations = 0; 
 	bool contInt = false;
@@ -181,15 +184,23 @@ void setUpOrganization(Organization* orgPtr) {
 	}
 	//continue loop while email is incorrect
 	while (!cont) {
-		puts("Enter email");
-		fgets(orgPtr->emailAddress, BUFF_LENGTH, stdin);
-		//bool correct = correctEmail();
+		bool validEm = false;
+		while (!validEm) {
+			puts("Enter email");
+			fGets(orgPtr->emailAddress);
+			validEm = validEmail(orgPtr->emailAddress); 
+		}
+
 		puts("\nIs this email correct? (y)es y/Y or (n)o n/N");
 		bool correct = correctYN(); 
 		//create password only if correctEmail function returns true 
 		if (correct == true) {
-			puts("Create Password");
-			fgets(orgPtr->password, BUFF_LENGTH, stdin);
+			bool validPass = false;
+			while (!validPass) {
+				puts("Create Password");
+				fGets(orgPtr->password);
+				validPass = validPassword(orgPtr->password); 
+			}
 			cont = true;
 		}
 		//loop until valid email 
@@ -197,9 +208,12 @@ void setUpOrganization(Organization* orgPtr) {
 			cont = false;
 		}
 	}
+	//create url for org
 	createURL(orgPtr);
+	//create reciept file for org
 	createRecieptFile(orgPtr->url, orgPtr->file);
 }
+//bootleg fgets
 void fGets(char* input) {
 	fgets(input, BUFF_LENGTH, stdin);
 	//remove ending
@@ -248,13 +262,82 @@ bool validInt(char* input) {
 		}
 		return cont; 
 }
-
-void validEmail() {
-
+//valid email format 
+bool validEmail(char* input) {
+	bool cont = true;
+	int length = strlen(input); 
+	//declare variables 
+	int i = 0,
+		at = -1,
+		dot = -1;
+	//count @ and . locations 
+	while (input[i]) {
+		if (input[i] == '@') {
+			at = i;
+		}
+		if (input[i] == '.') {
+			dot = i;
+		}
+		i++; 
+	}
+	if (at == -1 || dot == -1) {
+		puts("Needs @ and/or .");
+		cont = false; 
+	}
+	if (at > dot) {
+		puts("Not valid location");
+		cont = false;
+	}
+	if (length - dot != 4) {
+		puts("Not valid extention");
+		cont = false; 
+	}
+	if (dot - at <= 1) {
+		puts("Needs domain"); 
+		cont = false;
+	}
+	if (at == 0) {
+		puts("Needs username");
+		cont = false;
+	}
+	return cont; 
 }
-
-void validPassword() {
-
+//valid password format
+bool validPassword(char* input) {
+	bool cont = true;
+	//declare 
+	int i = 0,
+		lower = 0,
+		upper = 0,
+		digit = 0;
+	//iterate through password and count number of lower, upper, and digits 
+	while (input[i]) {
+		if (islower(input[i]))
+			lower++;
+		if (isupper(input[i]))
+			upper++;
+		if (isdigit(input[i]))
+			digit++;
+		
+		i++;
+	}
+	if (strlen(input) < 7) {
+		puts("Must have at least 7 characters");
+		cont = false;
+	}
+	if (lower == 0) {
+		puts("Needs lowercase");
+		cont = false;
+	}
+	if (upper == 0) {
+		puts("Needs uppercase");
+		cont = false;
+	}
+	if (digit == 0) {
+		puts("Needs number");
+		cont = false;
+	}
+	return cont; 
 }
 //create url using organization name
 void createURL(Organization* orgPtr) {
@@ -276,14 +359,15 @@ void createURL(Organization* orgPtr) {
 	printf("\nThank you %s. The url to raise funds for %s is %s\n", orgPtr->name, orgPtr->organizationName, orgPtr->urlFull);
 
 }
-
+//creates reciept file for later
 void createRecieptFile(char* name, char* file) {
 	FILE* filePtr;
+	//combine into one string
 	char path[BUFF_LENGTH];
 	strcpy(path, FOLDER_PATH);
 	strcat(path, name);
 	sprintf(file, "%s.txt", path); 
-	puts(file); 
+
 	filePtr = fopen(file, "w");
 	//check if you can make file
 	if (filePtr == NULL) {
@@ -323,6 +407,7 @@ void setUpDonation(Donation* donPtr, Organization* orgPtr) {
 		}
 	}
 }
+//select org from list
 void selectOrg(Organization** headPtr, Donation* donPtr) {
  
 	Organization* current = *headPtr;
@@ -330,11 +415,13 @@ void selectOrg(Organization** headPtr, Donation* donPtr) {
 	char name[80];
 	fGets(name);
 	puts((*headPtr)->organizationName);
+	//loop while match not found
 	while (current != NULL && (compare(current->organizationName, name) != 0)) {
 		
 			current = current->next;
 
 	}
+	//if it is found, continue to set up donation
 	if (current != NULL) {
 		setUpDonation(donPtr, current);
 	}
@@ -370,11 +457,12 @@ void reciept(char* orgName, double donTotal, char* file) {
 		bool correct = correctYN();
 		//create password only if correctEmail function returns true 
 		if (correct == true) {
+			//opens reciept file for org
 			filePtr = fopen(file, "a");
 			cont = true;
 			printf("\nOrganization: %s", orgName);
 			fprintf(filePtr, "Organization: %s", orgName);
-			printf("Donation Amount: %.2f", donTotal);
+			printf("\nDonation Amount: %.2f", donTotal);
 			fprintf(filePtr, "\nDonation Amount: %.2f", donTotal);
 			//find local time and date
 			time_t now;
@@ -397,6 +485,7 @@ void reciept(char* orgName, double donTotal, char* file) {
 				printf("\nDonation Date:  %02d/%02d/%d - %02d:%02d:%02d PM\n", day, month, year, hours - 12, minutes, seconds);
 				fprintf(filePtr, "\nDonation Date : % 02d / % 02d / % d - % 02d : % 02d : % 02d PM\n", day, month, year, hours - 12, minutes, seconds);
 			}
+			//close file
 			fclose(filePtr);
 		}
 		//move on to next step
@@ -479,7 +568,7 @@ void login(Donation* donPtr, Organization* orgPtr) {
 	puts("\nEnter email");
 	//loop twice to prompt email
 	while (!correct && counter != 3) {
-		fgets(email, BUFF_LENGTH, stdin);
+		fGets(email);
 		//if input does not match email
 		if (strcmp(email, orgPtr->emailAddress) != 0) {
 			puts("Incorrect email");
@@ -489,7 +578,7 @@ void login(Donation* donPtr, Organization* orgPtr) {
 			puts("Enter password");
 			//loop twice to prompt password
 			while (!correctP && counterP != 3) {
-				fgets(password, BUFF_LENGTH, stdin);
+				fGets(password);
 				//if input does not match password 
 				if (strcmp(password, orgPtr->password) != 0) {
 					puts("Incorrect password");
@@ -512,6 +601,7 @@ void login(Donation* donPtr, Organization* orgPtr) {
 		setUpDonation(donPtr, orgPtr);
 	}
 }
+//create file for all orgs
 void orgFile(Organization* headPtr) {
 	FILE* filePtr;
 	filePtr = fopen("C:\\Users\\Mordred\\Documents\\GitHubRepos\\CS2060\\fundraiser\\orgs.txt", "w");
@@ -525,8 +615,8 @@ void orgFile(Organization* headPtr) {
 	while (current != NULL) {
 		fprintf(filePtr, "Organization name: %s\n", current->organizationName);
 		fprintf(filePtr, "Total Number of Donations: %d\n", current->numDonations);
-		fprintf(filePtr, "Total Amount Raised: %.2f\n", current->donations);
-		fprintf(filePtr, "Total amount paid for credit card processing: %.2f\n", current->creditCard);
+		fprintf(filePtr, "Total Amount Raised: $%.2f\n", current->donations);
+		fprintf(filePtr, "Total amount paid for credit card processing: $%.2f\n", current->creditCard);
 		current = current->next;
 	}
 	//close file
@@ -536,10 +626,10 @@ void orgFile(Organization* headPtr) {
 void displayOrganization(Organization* orgPtr) {
 	printf("Organization name: %s\n", orgPtr->organizationName);
 	printf("Total Number of Donations: %d\n", orgPtr->numDonations);
-	printf("Total Amount Raised: %.2f\n", orgPtr->donations);
-	printf("Total amount paid for credit card processing: %.2f\n", orgPtr->creditCard);
+	printf("Total Amount Raised: $%.2f\n", orgPtr->donations);
+	printf("Total amount paid for credit card processing: $%.2f\n", orgPtr->creditCard);
 }
-
+//print all orgs
 void printFundraisers(Organization* headPtr) {
 	Organization* current = headPtr;
 	//start from the beginning
@@ -547,12 +637,12 @@ void printFundraisers(Organization* headPtr) {
 		puts("No organizations in list");
 	}
 	while (current != NULL) {
-		puts("Organization    Goal Amount    Donations");
-		printf("%s    %s    %.2f \n", current->organizationName, current->goalAmount, current->donations);
+		puts("\nOrganization    Goal Amount    Donations");
+		printf("%s           $%s         $%.2f \n", current->organizationName, current->goalAmount, current->donations);
 		current = current->next;
 	}
 }
-
+//print specific org
 void displayFundraiser(Organization* orgPtr) {
 	puts("\nMAKE A DIFFERENCE BY YOUR DONATION");
 	printf("Organization name: %s\n", orgPtr->organizationName);
