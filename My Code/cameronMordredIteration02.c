@@ -54,7 +54,7 @@ void createURL(Organization* orgPtr);
 void createRecieptFile(char* name, char* file);
 void setUpDonation(Donation* donPtr, Organization* orgPtr);
 void selectOrg(Organization** headPtr, Donation* donPtr);
-void validZip(Donation* donPtr);
+bool validZip(char* input); 
 void reciept(char* orgName, double donTotal, char* file);
 void cardFee(Donation* donPtr, Organization* orgPtr);
 void login(Donation* donPtr, Organization* orgPtr);
@@ -397,8 +397,12 @@ void setUpDonation(Donation* donPtr, Organization* orgPtr) {
 			cont = true;
 			puts("Enter your name");
 			fgets(donPtr->name, BUFF_LENGTH, stdin);
-			puts("Enter your 5 digit zip code");
-			validZip(donPtr);
+			bool vZip = false;
+			while (!vZip) {
+				puts("Enter your 5 digit zip code");
+				fGets(donPtr->zip); 
+				vZip = validZip(donPtr->zip);
+			}
 			//incriment number of donations
 			orgPtr->numDonations++;
 			cardFee(donPtr, orgPtr);
@@ -499,39 +503,28 @@ void reciept(char* orgName, double donTotal, char* file) {
 }
 
 //validate zip code
-void validZip(Donation* donPtr) {
+bool validZip(char* input) {
 	bool cont = false;
-	
-	//continue while incorrect input
-	while (!cont) {
 
-		fgets(donPtr->zip, BUFF_LENGTH, stdin);
-
-		//remove ending elements
-		size_t inputLength = strnlen(donPtr->zip, BUFF_LENGTH);
-		if (inputLength > 0 && donPtr->zip[inputLength - 1] == '\n')
-		{
-			donPtr->zip[inputLength - 1] = '\0';
-			inputLength--;
-		}
 		//test for valid integer
 		char* end;
 		errno = 0;
-		long intTest = strtol(donPtr->zip, &end, 10);
+		int inputLength = strlen(input); 
+		long intTest = strtol(input, &end, 10);
 		//create character to check if zip starts with 0 
 		char first;
-		first = donPtr->zip[0];
+		first = input[0];
 		//if the string matches the ending character
-		if (end == donPtr->zip) {
-			fprintf(stderr, "%s: not an integer\n", donPtr->zip);
+		if (end == input) {
+			fprintf(stderr, "%s: not an integer\n", input);
 		}
 		//if it is not the null character at the end of the converted string, there are extra characters 
 		else if ('\0' != *end) {
-			fprintf(stderr, "%s: extra characters at end of input: %s\n", donPtr->zip, end);
+			fprintf(stderr, "%s: extra characters at end of input: %s\n", input, end);
 		}
 		//when it is unsuccessful and stores ERANGE in errno, check if it was caused by being out of range 
 		else if ((LONG_MIN == intTest || LONG_MAX == intTest) && ERANGE == errno) {
-			fprintf(stderr, "%s Error out of range of long int\n", donPtr->zip);
+			fprintf(stderr, "%s Error out of range of long int\n", input);
 		}
 		//if the integer is greater then the acceptable max
 		else if (intTest > INT_MAX) {
@@ -553,8 +546,7 @@ void validZip(Donation* donPtr) {
 		else {
 			cont = true;
 		}
-	}
-
+		return cont; 
 }
 
 //login for organization
